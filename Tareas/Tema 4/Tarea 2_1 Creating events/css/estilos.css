@@ -1,0 +1,24 @@
+.dp-none{
+    display: none;
+}
+
+header{
+    display: flex;
+    justify-content: space-between;
+}
+
+body{
+    width: 60vw;
+    margin: 0 auto;
+}
+
+section{
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+section article{
+    display: flex;
+    flex-direction: column;
+}
