@@ -5,8 +5,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Proyecto JavaScript</title>
         <link rel="stylesheet" href="css/salida.css">
+        <script src="./js/index.js" defer></script>
     </head>
     <body>
-        
+        <section>
+            <article id="iniciarSesion" class="min-h-screen flex flex-col items-center justify-center">
+                <form id="formInicio" class="flex flex-col items-center justify-center">
+                    <input id="inputCorreo" class="my-4 border-2 border-black px-2" type="text" placeholder="Introduce tu correo" required>
+                    <input id="inputContra" class="my-4 border-2 border-black px-2" type="password" placeholder="Introduce tu contraseña" required>
+                    <button class="py-2 px-4 bg-blue-500 text-white hover:bg-blue-800 rounded-xl" id="iniciar">Inciar sesión</button>
+                </form>
+                <a class="mx-auto text-white bg-black my-4 px-4 py-1 rounded-xl" href="#">Registrarse</a>
+                <p id="error" class="my-2"></p>
+            </article>
+            <article id="registrarse" class="hidden">
+                
+            </article>
+        </section>
     </body>
 </html>
