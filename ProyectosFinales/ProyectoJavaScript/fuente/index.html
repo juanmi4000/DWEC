@@ -8,18 +8,39 @@
         <script src="./js/index.js" defer></script>
     </head>
     <body>
-        <section>
+        <section id="sct-iniRegis">
             <article id="iniciarSesion" class="min-h-screen flex flex-col items-center justify-center">
                 <form id="formInicio" class="flex flex-col items-center justify-center">
                     <input id="inputCorreo" class="my-4 border-2 border-black px-2" type="text" placeholder="Introduce tu correo" required>
                     <input id="inputContra" class="my-4 border-2 border-black px-2" type="password" placeholder="Introduce tu contraseña" required>
                     <button class="py-2 px-4 bg-blue-500 text-white hover:bg-blue-800 rounded-xl" id="iniciar">Inciar sesión</button>
                 </form>
-                <a class="mx-auto text-white bg-black my-4 px-4 py-1 rounded-xl" href="#">Registrarse</a>
+                <button id="btn-registrarse" class="mx-auto text-white bg-black my-4 px-4 py-1 rounded-xl">Registrarse</button>
                 <p id="error" class="my-2"></p>
             </article>
-            <article id="registrarse" class="hidden">
-                
+            <article id="registrarse" class="hidden min-h-screen flex flex-col items-center justify-center">
+                <form class="flex flex-col items-center justify-center">
+                    <label for="nombre">Nombre</label>
+                    <input class="my-4 border-2 border-black px-2" type="text" id="nombre" placeholder="Introduce tu nombre" required>
+
+                    <label for="apellidos">Apellidos</label>
+                    <input class="my-4 border-2 border-black px-2 bg-slate-300 placeholder:text-slate-700" type="text" id="apellidos" placeholder="Introduce tus apellidos" disabled required>
+
+                    <label for="correo">Correo</label>
+                    <input class="my-4 border-2 border-black px-2 bg-slate-300 placeholder:text-slate-700" type="email" id="correo" placeholder="Introduce tu correo" disabled required>
+
+                    <label for="telefono">Teléfono</label>
+                    <input class="my-4 border-2 border-black px-2 bg-slate-300 placeholder:text-slate-700" type="text" id="telefono" placeholder="Introduce tu teléfono" disabled required>
+
+                    <label for="dni">DNI</label>
+                    <input class="my-4 border-2 border-black px-2 bg-slate-300 placeholder:text-slate-700" type="text" id="dni" placeholder="Introduce tu DNI" disabled required>
+
+                    <label for="edad">Edad</label>
+                    <input class="my-4 border-2 border-black px-2 bg-slate-300 placeholder:text-slate-700" type="number" id="edad" placeholder="Introduce tu edad" disabled required>
+                    
+                    <button id="btn-registrarse" class="p-2 rounded-xl bg-slate-300 text-slate-700" disabled>Registrarse</button>
+                    <a href=""></a>
+                </form>
             </article>
         </section>
     </body>
