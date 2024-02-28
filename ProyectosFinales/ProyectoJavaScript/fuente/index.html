@@ -45,15 +45,35 @@
         </section>
 
         <section id="principal" class="hidden">
-            <header>
-                <h1>holaaaaaa</h1>
+            <header class="w-full bg-slate-300">
+                <nav class="h-16 w-10/12 m-auto flex justify-end items-center">
+                    <img class="w-7 cursor-pointer" src="../node_modules/remixicons/fill/shopping-bag-2.svg" alt="Carrito">
+                </nav>
             </header>
-            <section>
+            <section class="flex flex-col justify-center items-center">
                 <article>
-                    <select class="w-max">
+                    <select class="w-max bg-white">
                         <option value="tabla" selected>Tabla</option>
                         <option value="lista">Lista</option>
                     </select>
+                </article>
+                <article id="mostrar" class="flex flex-col justify-center">
+
+                </article> 
+                <article id="mostrarInfo" class="hidden relative w-11/12 h-screen text-center">
+                    <img id="cerrar" class="absolute w-6 top-2 right-4 cursor-pointer" src="../node_modules/remixicons/fill/close-circle.svg" >
+                    <h2 id="titulo"></h2>
+                    <p id="categoria"></p>
+                    <p id="descripcion"></p>
+                    <div id="imagen">
+
+                    </div>
+                    <p id="precio"></p>
+
+                </article>
+
+                <article id="carrito" class="hidden">
+                    
                 </article>
             </section>
         </section>
