@@ -35,6 +35,7 @@ document.getElementById("sct-iniRegis").addEventListener("click", (evento) => {
                 //! No me lo hace
                 //.open("http://localhost:1234/html/inicio.html");
                 // location.href = "http://localhost:1234/html/inicio.html";
+                localStorage.setItem("carrito", JSON.stringify([]));
                 document.getElementById("sct-iniRegis").classList.add("hidden");
                 document.getElementById("principal").classList.remove("hidden");
                 document.getElementById("principal").classList.add("flex", "flex-col", "m-4", "justify-center", "item");
@@ -79,6 +80,8 @@ document.getElementById("sct-iniRegis").addEventListener("click", (evento) => {
                     }
                     localStorage.setItem(`${correo.value}`, JSON.stringify(usuarioNuevo));
                     alert("El usuario se ha registrado correctamente.\n Ususario: correo\nContraseña: dni");
+                    document.getElementById("registrarse").classList.add("hidden");
+                    document.getElementById("iniciarSesion").classList.remove("hidden");
                 } else {
                     alert("Ese usuario ya existe.")
                 }
@@ -135,7 +138,7 @@ document.getElementById("registrarse").addEventListener("change", (evento) => {
     }
 });
 
-document.getElementById("mostrar").addEventListener("click", (evento) => {
+document.getElementById("principal").addEventListener("click", (evento) => {
     switch (evento.target.id) {
         case 'ordenar':
             cargarProductos(limite).then(datos => {
@@ -158,9 +161,25 @@ document.getElementById("mostrar").addEventListener("click", (evento) => {
                 
             });
             break;
-    
-        case '':
+        
+        case 'volver':
+            document.getElementById("opciones").classList.remove("hidden");
+            document.getElementById("mostrar").classList.remove("hidden");
+            document.getElementById("carrito").classList.add("hidden");
             break;
+    
+        case 'carro':
+            mostrarCarrito();
+            break;
+        
+        case 'realizarPed':
+            localStorage.setItem("carrito", JSON.stringify([]));
+            alert("Pedido realizado con éxito");
+            document.getElementById("carrito").classList.add("hidden");
+            document.getElementById("mostrar").classList.remove("hidden");
+            document.getElementById("opciones").classList.remove("hidden");
+            break; 
+
     }
 });
 
@@ -308,9 +327,10 @@ function comprobarInput(expresion, valor_input, hermano) {
 function crearTabla(productos) {
     const tabla = document.createElement("table");
     let tr = document.createElement("tr");
-    ["Ver","Categoría", "Nombre", "Imagen", "Precio", "Opciones"].forEach(elemento => {
+    ["Ver","Categoría", "Título", "Imagen", "Precio", "Opciones"].forEach(elemento => {
         let th = document.createElement("th");
         th.textContent = elemento;
+        insertarClases(th, "text-center");
         if (elemento == "Categoría") {
             let flechaArriba = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9999 10.8284L7.0502 15.7782L5.63599 14.364L11.9999 8L18.3639 14.364L16.9497 15.7782L11.9999 10.8284Z"></path></svg>`;
             let flechaAbajo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path></svg>`;
@@ -347,7 +367,6 @@ function crearTabla(productos) {
         spanVer.innerHTML = ojoSvg;
         insertarClases(spanVer, "w-7", "cursor-pointer");
         let spanGusta = document.createElement("span");
-        spanGusta.onclick = function () {return aumentar(this)};
         spanGusta.classList.add("me-gusta");
         spanGusta.innerHTML = meGustaSvg + "<p>0</p>";
         insertarClases(spanGusta, "w-7", "block", "cursor-pointer", "my-5", "text-center");
@@ -357,6 +376,7 @@ function crearTabla(productos) {
         insertarClases(spanNoGusta, "w-7", "block", "cursor-pointer", "my-5", "text-center");
         let spanAnadir = document.createElement("span");
         spanAnadir.innerHTML = anadirSvg;
+        spanAnadir.classList.add('anadir');
         insertarClases(spanAnadir, "w-7", "block", "cursor-pointer", "my-5");
         let img = document.createElement("img");
         img.src = producto.image;
@@ -382,12 +402,14 @@ function crearTabla(productos) {
         insertarClases(tr2, "border-y", "hover:bg-blue-200", "transition", "ease-in", "duration-500");
         tabla.appendChild(tr2);
     });
+
     let articulo = document.getElementById("mostrar");
     articulo.innerHTML = "";
     articulo.appendChild(tabla);
     escuchadorMeGusta();
     escuchadorNoGusta();
-    mostrarInformacionExtra();   
+    mostrarInformacionExtra(); 
+    escuchadorAnadir();  
 }
 
 function crearLista(productos) {
@@ -420,6 +442,106 @@ function insertarClases(elemento, ...clases) {
     });
 }
 
+function mostrarCarrito() {
+    let carrito = localStorage.getItem("carrito");
+    let mostrarCarr = document.getElementById("carrito");
+    mostrarCarr.innerHTML = "";
+    mostrarCarr.classList.remove("hidden");
+    let mostrarInfo = document.getElementById("mostrar");
+    mostrarInfo.classList.add("hidden");
+    document.getElementById("opciones").classList.add("hidden");
+    if (carrito != "[]") {
+        let todoCarrito = JSON.parse(carrito);
+        crearTablaCarrito(todoCarrito);
+    } else {
+        document.getElementById("opciones").classList.add("hidden");
+        let parrafo = document.createElement("p");
+        parrafo.textContent = "Aún no hay productos añadidos";
+        insertarClases(parrafo, "font-bold", "text-center", "mt-8");
+        mostrarCarr.appendChild(parrafo);
+    }
+}
+
+function crearTablaCarrito(productos) {
+    const tabla = document.createElement("table");
+    let cabecera = document.createElement("tr");
+    ["Título", "Imagen", "Precio"].forEach((elemento) => {
+        let th = document.createElement("th");
+        th.textContent = elemento;
+        insertarClases(th, "text-center");
+        cabecera.appendChild(th);
+    });
+    tabla.appendChild(cabecera);
+    productos.forEach((producto) => {
+        let cuerpo = document.createElement("tr");
+        let titulo = document.createElement("td");
+        let imagen = document.createElement("td");
+        let img = document.createElement("img");
+        let precio = document.createElement("td");
+        titulo.textContent = producto.title;
+        insertarClases(titulo, "text-center");
+        img.src = producto.image;
+        img.classList.add("w-48", "rounded-3xl");
+        imagen.appendChild(img);
+        precio.textContent = producto.price + " €";
+        insertarClases(precio, "text-center", "w-24");
+        cuerpo.appendChild(titulo);
+        cuerpo.appendChild(imagen);
+        cuerpo.appendChild(precio);
+        insertarClases(cuerpo, "border-y", "hover:bg-blue-200", "transition", "ease-in", "duration-500");
+        tabla.appendChild(cuerpo);
+    });
+    let btn = document.createElement("button");
+    btn.textContent = "Realizar pedido";
+    btn.id = "realizarPed";
+    insertarClases(btn, "bg-blue-800", "text-white", "p-2", "rounded-3xl", "my-5");
+    let articulo = document.getElementById("carrito");
+    articulo.innerHTML = "";
+    articulo.appendChild(tabla);
+    articulo.appendChild(btn);
+    articulo.classList.add("flex", "flex-col", "justify-center", "items-center")
+}
+
+function escuchadorAnadir() {
+    let spanAnadir = document.querySelectorAll(".anadir");
+    spanAnadir.forEach((span) => {
+        span.addEventListener("click", (evento) => {
+            let padre = span.parentNode;
+            let abuelo = padre.parentNode;
+            let carritoStorage = localStorage.getItem("carrito");
+            let encontrado = false;
+            carritoStorage = JSON.parse(carritoStorage);
+            carritoStorage.forEach((elemento) => {
+                if (elemento.id == abuelo.id) {
+                    encontrado = true;
+                }
+            });
+            
+            if (encontrado) {
+                alert("Ese producto ya lo tienes en el carrito");
+            } else {
+                cargarProductos(limite).then((datos) => {
+                    datos.forEach(prod => {
+                        if (prod.id == abuelo.id) {
+                            carritoStorage.push(prod);
+                        }
+                        
+                    });
+                    localStorage.setItem("carrito", JSON.stringify(carritoStorage));
+                    let carro = document.getElementById('carro');
+                    insertarClases(carro, "animate-spin");
+                    setTimeout(function() {
+                        document.getElementById('carro').classList.remove('animate-spin');
+                    }, 1000);
+                });
+                /*ERROR DE TONTOS: NO SE PUEDE PONER FUERA ES ASINCRONA
+                 localStorage.setItem("carrito", JSON.stringify(objeto));
+                alert("Se ha añadido el producto"); */
+            }
+        });
+    });
+}
+
 function escuchadorMeGusta() {
     let spanMeGusta = document.querySelectorAll(".me-gusta");
     spanMeGusta.forEach((span) => {
@@ -447,7 +569,7 @@ function mostrarInformacionExtra() {
     ver.forEach((spam) => {
         spam.addEventListener("click", (evento) => {
             let padre = spam.parentNode;
-            let abuelo = padre.parentNode;
+            let abuelo = padre.parentNode;  
             cargarProductos(limite).then(datos => {
                 let objeto = {};
                 datos.forEach(prod => {

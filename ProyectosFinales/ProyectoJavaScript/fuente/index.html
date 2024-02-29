@@ -46,19 +46,20 @@
 
         <section id="principal" class="hidden">
             <header class="w-full bg-slate-300">
-                <nav class="h-16 w-10/12 m-auto flex justify-end items-center">
-                    <img class="w-7 cursor-pointer" src="../node_modules/remixicons/fill/shopping-bag-2.svg" alt="Carrito">
+                <nav class="h-16 w-10/12 m-auto flex justify-between items-center">
+                    <img id="volver" class="w-7 cursor-pointer" src="../node_modules/remixicons/fill/home-5.svg" alt="">
+                    <img id="carro" class="w-7 anima cursor-pointer" src="../node_modules/remixicons/fill/shopping-bag-2.svg" alt="Carrito">
                 </nav>
             </header>
             <section class="flex flex-col justify-center items-center">
-                <article>
+                <article id="opciones">
                     <select class="w-max bg-white">
                         <option value="tabla" selected>Tabla</option>
                         <option value="lista">Lista</option>
                     </select>
                 </article>
                 <article id="mostrar" class="flex flex-col justify-center">
-
+                    
                 </article> 
                 <article id="mostrarInfo" class="hidden relative w-11/12 h-screen text-center">
                     <img id="cerrar" class="absolute w-6 top-2 right-4 cursor-pointer" src="../node_modules/remixicons/fill/close-circle.svg" >
