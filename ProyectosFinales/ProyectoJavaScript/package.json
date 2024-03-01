@@ -2,7 +2,6 @@
   "name": "proyectojavascript",
   "version": "1.0.0",
   "description": "Proyecto de JavaScript utilizando una API",
-  "main": "index.js",
   "directories": {
     "doc": "docs"
   },
@@ -13,7 +12,7 @@
     "parcel:produccion": "parcel build fuente/index.html --public-url './' --dist-dir produccion",
     "limpieza": "rimraf desarrollo produccion .parcel-cache",
     "des": "npm-run-all -p tailwind:vigilante parcel:desarrollo",
-    "prod": "npm-run-all limpia tailwind:una-vez parcel:produccion",
+    "prod": "npm-run-all limpieza tailwind:una-vez parcel:produccion",
     "ordena": "prettier --write fuente"
   },
   "repository": {

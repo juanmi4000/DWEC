@@ -18,7 +18,7 @@
                 <button id="btn-registrarse" class="mx-auto text-white bg-black my-4 px-4 py-1 rounded-xl">Registrarse</button>
                 <p id="error" class="my-2"></p>
             </article>
-            <article id="registrarse" class="hidden min-h-screen flex flex-col items-center justify-center">
+            <article id="registrarse" class="hidden min-h-screen flex-col items-center justify-center">
                 <form class="flex flex-col items-center justify-center">
                     <label for="nombre">Nombre</label>
                     <input class="my-4 border-2 border-black px-2" type="text" id="nombre" placeholder="Introduce tu nombre" required>
@@ -48,17 +48,18 @@
             <header class="w-full bg-slate-300">
                 <nav class="h-16 w-10/12 m-auto flex justify-between items-center">
                     <img id="volver" class="w-7 cursor-pointer" src="../node_modules/remixicons/fill/home-5.svg" alt="">
-                    <img id="carro" class="w-7 anima cursor-pointer" src="../node_modules/remixicons/fill/shopping-bag-2.svg" alt="Carrito">
+                    <button id="activar"></button>
+                    <img id="carro" class="w-7 cursor-pointer" src="../node_modules/remixicons/fill/shopping-bag-2.svg" alt="Carrito">
                 </nav>
             </header>
             <section class="flex flex-col justify-center items-center">
                 <article id="opciones">
-                    <select class="w-max bg-white">
+                    <select class="w-max bg-white my-6">
                         <option value="tabla" selected>Tabla</option>
                         <option value="lista">Lista</option>
                     </select>
                 </article>
-                <article id="mostrar" class="flex flex-col justify-center">
+                <article id="mostrar" class="flex flex-col justify-center mx-5 items-center">
                     
                 </article> 
                 <article id="mostrarInfo" class="hidden relative w-11/12 h-screen text-center">

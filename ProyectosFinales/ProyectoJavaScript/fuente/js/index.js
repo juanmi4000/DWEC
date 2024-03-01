@@ -3,12 +3,11 @@ let usuarios;
 let productos;
 let limite = 5;
 let carrito = [];
-let indice = 1;
+let indice = 2;
 
 cargarUsuarios().then(data => {
     usuarios = data;
 });
-
 
     
 //! EVENTOS
@@ -39,19 +38,21 @@ document.getElementById("sct-iniRegis").addEventListener("click", (evento) => {
                 document.getElementById("sct-iniRegis").classList.add("hidden");
                 document.getElementById("principal").classList.remove("hidden");
                 document.getElementById("principal").classList.add("flex", "flex-col", "m-4", "justify-center", "item");
-                cargarProductos(limite).then(datos => {
+                cargarProductos(limite).then((datos) => {
                     datos = ordenarAsc(datos);
-                    crearTabla(datos);
-                    let seleccionado = document.querySelector("select");
-                    seleccionado.addEventListener('change', (evento) => {
-                        let opcionSeleccionada = seleccionado.options[seleccionado.selectedIndex]; 
-                        if (opcionSeleccionada.value == "tabla") {
-                            crearTabla(datos);
-                        } else {
-                            crearLista(datos);
-                        }
-                    });
-                    
+                    inicializarLocal(datos);
+                    setTimeout(function () {
+                        crearTabla(datos);
+                        let seleccionado = document.querySelector("select");
+                        seleccionado.addEventListener('change', (evento) => {
+                            let opcionSeleccionada = seleccionado.options[seleccionado.selectedIndex]; 
+                            if (opcionSeleccionada.value == "tabla") {
+                                crearTabla(datos);
+                            } else {
+                                crearLista(datos);
+                            }
+                        });
+                    }, 1500);                    
                 }); 
             }
             break;
@@ -59,6 +60,7 @@ document.getElementById("sct-iniRegis").addEventListener("click", (evento) => {
             document.getElementById("iniciarSesion").classList.add("hidden");
             let regis = document.getElementById("registrarse");
             regis.classList.remove("hidden");
+            regis.classList.add("flex");
             break;
         case 'btn-registrarse2':
             let nombre = document.getElementById("nombre");
@@ -88,9 +90,6 @@ document.getElementById("sct-iniRegis").addEventListener("click", (evento) => {
             } else {
                 alert("Lo sentimos algún valor no es correcto");
             }
-            break;
-
-        default:
             break;
     }
 });
@@ -148,8 +147,12 @@ document.getElementById("principal").addEventListener("click", (evento) => {
                     datos = ordenarAsc(datos);
                 }
                 indice++;
-                crearTabla(datos);
                 let seleccionado = document.querySelector("select");
+                if (seleccionado.options[seleccionado.selectedIndex].value == "tabla") {
+                    crearTabla(datos);
+                } else {
+                    crearLista(datos);
+                }
                 seleccionado.addEventListener('change', (evento) => {
                     let opcionSeleccionada = seleccionado.options[seleccionado.selectedIndex]; 
                     if (opcionSeleccionada.value == "tabla") {
@@ -179,7 +182,8 @@ document.getElementById("principal").addEventListener("click", (evento) => {
             document.getElementById("mostrar").classList.remove("hidden");
             document.getElementById("opciones").classList.remove("hidden");
             break; 
-
+        case 'activar':
+            setTimeout(mostrarCarrito(), 500);
     }
 });
 
@@ -243,8 +247,12 @@ async function conseguirMasProductos() {
         limite += 5;
         cargarProductos(limite).then(datos => {
             datos = ordenarAsc(datos);
-            crearTabla(datos);
             let seleccionado = document.querySelector("select");
+            if (seleccionado.options[seleccionado.selectedIndex].value == "tabla") {
+                crearTabla(datos);
+            } else {
+                crearLista(datos);
+            }
             seleccionado.addEventListener('change', (evento) => {
                 let opcionSeleccionada = seleccionado.options[seleccionado.selectedIndex]; 
                 if (opcionSeleccionada.value == "tabla") {
@@ -260,7 +268,7 @@ async function conseguirMasProductos() {
 async function cargarProductos(limite) {  
     let url = `https://fakestoreapi.com/products?limit=${limite}`;
     const respuesta = await fetch(url);
-    const arrPr = await respuesta.json()
+    const arrPr = await respuesta.json();
     return arrPr;
 
 }
@@ -286,7 +294,7 @@ function comprobarUsuarios(usuarios, usuario, contra) {
             let expirationDate = new Date();
             expirationDate.setDate(expirationDate.getDate() + 1);
             let expires = "expires=" + expirationDate.toUTCString();
-            document.cookie = `id=${usuario.correo};${expires}:path=/`;
+            document.cookie = `id=${usuario};${expires}:path=/`;
             encontrado = true;   
         }
     }
@@ -324,7 +332,28 @@ function comprobarInput(expresion, valor_input, hermano) {
     }
 }
 
+function inicializarLocal() {
+    let arr = [];
+    cargarProductos(20).then(productos => {
+        productos.forEach((producto) => {
+            let objeto = {
+                id : producto.id,
+                cantidad : 0
+            };
+            arr.push(objeto);
+        });
+        localStorage.setItem("gusta", JSON.stringify(arr));
+        localStorage.setItem("noGusta", JSON.stringify(arr));
+    });
+}
+
 function crearTabla(productos) {
+    const flechaArriba = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9999 10.8284L7.0502 15.7782L5.63599 14.364L11.9999 8L18.3639 14.364L16.9497 15.7782L11.9999 10.8284Z"></path></svg>`;
+    const flechaAbajo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path></svg>`;
+    const ojoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M1.18164 12C2.12215 6.87976 6.60812 3 12.0003 3C17.3924 3 21.8784 6.87976 22.8189 12C21.8784 17.1202 17.3924 21 12.0003 21C6.60812 21 2.12215 17.1202 1.18164 12ZM12.0003 17C14.7617 17 17.0003 14.7614 17.0003 12C17.0003 9.23858 14.7617 7 12.0003 7C9.23884 7 7.00026 9.23858 7.00026 12C7.00026 14.7614 9.23884 17 12.0003 17ZM12.0003 15C10.3434 15 9.00026 13.6569 9.00026 12C9.00026 10.3431 10.3434 9 12.0003 9C13.6571 9 15.0003 10.3431 15.0003 12C15.0003 13.6569 13.6571 15 12.0003 15Z"></path></svg>`;
+    const meGustaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.001 4.52853C14.35 2.42 17.98 2.49 20.2426 4.75736C22.5053 7.02472 22.583 10.637 20.4786 12.993L11.9999 21.485L3.52138 12.993C1.41705 10.637 1.49571 7.01901 3.75736 4.75736C6.02157 2.49315 9.64519 2.41687 12.001 4.52853Z"></path></svg>`;
+    const noGustaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.80777 1.3934L21.1925 19.7782L19.7783 21.1924L16.0316 17.4454L12 21.485L3.52154 12.993C1.48186 10.7094 1.49309 7.24014 3.55524 4.96959L1.39355 2.80762L2.80777 1.3934ZM4.98009 11.6232L12 18.6543L14.6176 16.0314L4.97206 6.38623C3.67816 7.88265 3.67138 10.121 4.98009 11.6232ZM20.2428 4.75736C22.5054 7.02472 22.5831 10.637 20.4788 12.993L18.8442 14.629L17.4302 13.215L19.0202 11.6232C20.3937 10.0467 20.3191 7.66525 18.8271 6.1701C17.3281 4.66794 14.9078 4.60702 13.3371 6.01688L12.0021 7.21524L10.6662 6.01781C10.3163 5.70415 9.92487 5.46325 9.51117 5.29473L7.2604 3.04551C8.92926 2.83935 10.6682 3.33369 12.0011 4.52853C14.3502 2.42 17.9802 2.49 20.2428 4.75736Z"></path></svg>`;
+    const anadirSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path></svg>`;
     const tabla = document.createElement("table");
     let tr = document.createElement("tr");
     ["Ver","Categoría", "Título", "Imagen", "Precio", "Opciones"].forEach(elemento => {
@@ -332,18 +361,16 @@ function crearTabla(productos) {
         th.textContent = elemento;
         insertarClases(th, "text-center");
         if (elemento == "Categoría") {
-            let flechaArriba = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9999 10.8284L7.0502 15.7782L5.63599 14.364L11.9999 8L18.3639 14.364L16.9497 15.7782L11.9999 10.8284Z"></path></svg>`;
-            let flechaAbajo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path></svg>`;
-            let spam = document.createElement("span");
+            let span = document.createElement("span");
             if (indice % 2 == 0) {
-                spam.innerHTML = flechaAbajo;
+                span.innerHTML = flechaArriba;
             } else {
-                spam.innerHTML = flechaArriba;
+                span.innerHTML = flechaAbajo;
             }
             
-            insertarClases(spam, "w-5", "inline-block");
+            insertarClases(span, "w-5", "inline-block");
             th.id = "ordenar";
-            th.appendChild(spam);
+            th.appendChild(span);
             insertarClases(th, "cursor-pointer", "flex", "justify-between", "item-center");
 
         }  
@@ -351,10 +378,6 @@ function crearTabla(productos) {
     });
     tabla.appendChild(tr);
     productos.forEach(producto => {
-        let ojoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M1.18164 12C2.12215 6.87976 6.60812 3 12.0003 3C17.3924 3 21.8784 6.87976 22.8189 12C21.8784 17.1202 17.3924 21 12.0003 21C6.60812 21 2.12215 17.1202 1.18164 12ZM12.0003 17C14.7617 17 17.0003 14.7614 17.0003 12C17.0003 9.23858 14.7617 7 12.0003 7C9.23884 7 7.00026 9.23858 7.00026 12C7.00026 14.7614 9.23884 17 12.0003 17ZM12.0003 15C10.3434 15 9.00026 13.6569 9.00026 12C9.00026 10.3431 10.3434 9 12.0003 9C13.6571 9 15.0003 10.3431 15.0003 12C15.0003 13.6569 13.6571 15 12.0003 15Z"></path></svg>`;
-        let meGustaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.001 4.52853C14.35 2.42 17.98 2.49 20.2426 4.75736C22.5053 7.02472 22.583 10.637 20.4786 12.993L11.9999 21.485L3.52138 12.993C1.41705 10.637 1.49571 7.01901 3.75736 4.75736C6.02157 2.49315 9.64519 2.41687 12.001 4.52853Z"></path></svg>`;
-        let noGustaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.80777 1.3934L21.1925 19.7782L19.7783 21.1924L16.0316 17.4454L12 21.485L3.52154 12.993C1.48186 10.7094 1.49309 7.24014 3.55524 4.96959L1.39355 2.80762L2.80777 1.3934ZM4.98009 11.6232L12 18.6543L14.6176 16.0314L4.97206 6.38623C3.67816 7.88265 3.67138 10.121 4.98009 11.6232ZM20.2428 4.75736C22.5054 7.02472 22.5831 10.637 20.4788 12.993L18.8442 14.629L17.4302 13.215L19.0202 11.6232C20.3937 10.0467 20.3191 7.66525 18.8271 6.1701C17.3281 4.66794 14.9078 4.60702 13.3371 6.01688L12.0021 7.21524L10.6662 6.01781C10.3163 5.70415 9.92487 5.46325 9.51117 5.29473L7.2604 3.04551C8.92926 2.83935 10.6682 3.33369 12.0011 4.52853C14.3502 2.42 17.9802 2.49 20.2428 4.75736Z"></path></svg>`;
-        let anadirSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path></svg>`;
         let tr2 = document.createElement("tr");
         let tdVer = document.createElement("td");
         let tdTitulo = document.createElement("td");
@@ -363,18 +386,20 @@ function crearTabla(productos) {
         let tdPrecio = document.createElement("td");
         let tdOpciones = document.createElement("td");
         let spanVer = document.createElement("span");
+        let spanGusta = document.createElement("span");
+        let spanNoGusta = document.createElement("span");
+        let spanAnadir = document.createElement("span");
         spanVer.classList.add("ver");
         spanVer.innerHTML = ojoSvg;
         insertarClases(spanVer, "w-7", "cursor-pointer");
-        let spanGusta = document.createElement("span");
         spanGusta.classList.add("me-gusta");
-        spanGusta.innerHTML = meGustaSvg + "<p>0</p>";
+        let numEncontradoGusta = encontrarLocalGusta(producto.id);
+        spanGusta.innerHTML = meGustaSvg + `<p>${numEncontradoGusta}</p>`; 
         insertarClases(spanGusta, "w-7", "block", "cursor-pointer", "my-5", "text-center");
-        let spanNoGusta = document.createElement("span");
         spanNoGusta.classList.add("no-me-gusta");
-        spanNoGusta.innerHTML = noGustaSvg + "<p id='p-noGusta'>0</p>";
+        let numEncontradoNoGusta = encontrarLocalNoGusta(producto.id);
+        spanNoGusta.innerHTML = noGustaSvg + `<p>${numEncontradoNoGusta}</p>`;
         insertarClases(spanNoGusta, "w-7", "block", "cursor-pointer", "my-5", "text-center");
-        let spanAnadir = document.createElement("span");
         spanAnadir.innerHTML = anadirSvg;
         spanAnadir.classList.add('anadir');
         insertarClases(spanAnadir, "w-7", "block", "cursor-pointer", "my-5");
@@ -412,28 +437,111 @@ function crearTabla(productos) {
     escuchadorAnadir();  
 }
 
+function encontrarLocalGusta(id) {
+    let meGusta = JSON.parse(localStorage.getItem("gusta"));
+    let encontrado = 0;
+    meGusta.forEach((elemento) => {
+        if (elemento.id == id) {
+            encontrado = elemento.cantidad;
+        }
+    });
+    return encontrado;
+}
+
+function encontrarLocalNoGusta(id) {
+    let noGusta = JSON.parse(localStorage.getItem("noGusta"));
+    let encontrado = 0;
+    noGusta.forEach((elemento) => {
+        if (elemento.id == id) {
+            encontrado = elemento.cantidad;
+        }
+    });
+    return encontrado;
+}
+
+function encontrarLocalCarrito(id) {
+    let carrito = JSON.parse(localStorage.getItem("carrito"));
+    let encontrado = 0;
+    carrito.forEach((elemento) => {
+        if (elemento.id == id) {
+            encontrado = elemento.cantidad;
+        }
+    });
+    return encontrado;
+} 
+
 function crearLista(productos) {
+    const flechaArriba = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9999 10.8284L7.0502 15.7782L5.63599 14.364L11.9999 8L18.3639 14.364L16.9497 15.7782L11.9999 10.8284Z"></path></svg>`;
+    const flechaAbajo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path></svg>`;
+    const ojoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M1.18164 12C2.12215 6.87976 6.60812 3 12.0003 3C17.3924 3 21.8784 6.87976 22.8189 12C21.8784 17.1202 17.3924 21 12.0003 21C6.60812 21 2.12215 17.1202 1.18164 12ZM12.0003 17C14.7617 17 17.0003 14.7614 17.0003 12C17.0003 9.23858 14.7617 7 12.0003 7C9.23884 7 7.00026 9.23858 7.00026 12C7.00026 14.7614 9.23884 17 12.0003 17ZM12.0003 15C10.3434 15 9.00026 13.6569 9.00026 12C9.00026 10.3431 10.3434 9 12.0003 9C13.6571 9 15.0003 10.3431 15.0003 12C15.0003 13.6569 13.6571 15 12.0003 15Z"></path></svg>`;
+    const meGustaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.001 4.52853C14.35 2.42 17.98 2.49 20.2426 4.75736C22.5053 7.02472 22.583 10.637 20.4786 12.993L11.9999 21.485L3.52138 12.993C1.41705 10.637 1.49571 7.01901 3.75736 4.75736C6.02157 2.49315 9.64519 2.41687 12.001 4.52853Z"></path></svg>`;
+    const noGustaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.80777 1.3934L21.1925 19.7782L19.7783 21.1924L16.0316 17.4454L12 21.485L3.52154 12.993C1.48186 10.7094 1.49309 7.24014 3.55524 4.96959L1.39355 2.80762L2.80777 1.3934ZM4.98009 11.6232L12 18.6543L14.6176 16.0314L4.97206 6.38623C3.67816 7.88265 3.67138 10.121 4.98009 11.6232ZM20.2428 4.75736C22.5054 7.02472 22.5831 10.637 20.4788 12.993L18.8442 14.629L17.4302 13.215L19.0202 11.6232C20.3937 10.0467 20.3191 7.66525 18.8271 6.1701C17.3281 4.66794 14.9078 4.60702 13.3371 6.01688L12.0021 7.21524L10.6662 6.01781C10.3163 5.70415 9.92487 5.46325 9.51117 5.29473L7.2604 3.04551C8.92926 2.83935 10.6682 3.33369 12.0011 4.52853C14.3502 2.42 17.9802 2.49 20.2428 4.75736Z"></path></svg>`;
+    const anadirSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path></svg>`;
+    let boton = document.createElement("button");
+    let span = document.createElement("span");
+    if (indice % 2 == 0) {
+        span.innerHTML = flechaArriba;
+    } else {
+        span.innerHTML = flechaAbajo;
+    }        
+    insertarClases(span, "w-5", "block");
+    boton.id = "ordenar";
+    boton.textContent = "Ordenar por categorías";
+    boton.appendChild(span);
+    insertarClases(boton, "cursor-pointer", "flex", "justify-between", "item-center", "bg-blue-300", "p-1", "rounded-3xl");
     const ul = document.createElement("ul");
     insertarClases(ul, "flex", "flex-wrap");
     productos.forEach(producto => {
-        let articulo = document.getElementById("mostrar");
-        articulo.innerHTML = "";
-        let li1 = document.createElement("li");
-        insertarClases("")
-        let li2 = li1.cloneNode();
-        let li3 = li1.cloneNode();
+        let li = document.createElement("li");
+        let parr = document.createElement("p");
         let img = document.createElement("img");
+        let div = document.createElement("div");
+        let spanVer = document.createElement("span");
+        let spanGusta = document.createElement("span");
+        let spanNoGusta = document.createElement("span");
+        let spanAnadir = document.createElement("span");
+        spanVer.classList.add("ver");
+        spanVer.innerHTML = ojoSvg;
+        insertarClases(spanVer, "w-7", "block", "cursor-pointer");
+        spanGusta.classList.add("me-gusta");
+        let numEncontradoGusta = encontrarLocalGusta(producto.id);
+        spanGusta.innerHTML = meGustaSvg + `<p>${numEncontradoGusta}</p>`; 
+        insertarClases(spanGusta, "w-7", "block", "cursor-pointer", "my-5", "text-center");
+        spanNoGusta.classList.add("no-me-gusta");
+        let numEncontradoNoGusta = encontrarLocalNoGusta(producto.id);
+        spanNoGusta.innerHTML = noGustaSvg + `<p>${numEncontradoNoGusta}</p>`;
+        insertarClases(spanNoGusta, "w-7", "block", "cursor-pointer", "my-5", "text-center");
+        spanAnadir.innerHTML = anadirSvg;
+        spanAnadir.classList.add('anadir');
+        div.appendChild(spanVer);
+        div.appendChild(spanGusta);
+        div.appendChild(spanNoGusta);
+        div.appendChild(spanAnadir);
+        insertarClases(div, "flex", "justify-between", "items-center", "mx-2");
+        insertarClases(spanAnadir, "w-7", "block", "cursor-pointer", "my-5");
+        insertarClases(li, "flex", "flex-col", "gap-5", "hover:bg-blue-200", "transition", "ease-in", "duration-500", "my-5", "p-5", "w-1/4", "border-b");
+        insertarClases(img, "m-auto", "w-48", "rounded-3xl");
         img.src = producto.image;
         img.classList.add("w-64");
-        li1.appendChild(document.createTextNode(producto.title));
-        li2.appendChild(img);
-        li3.appendChild(document.createTextNode(producto.price));
-        ul.appendChild(li1);
-        ul.appendChild(li2);
-        ul.appendChild(li3);
-        
-        articulo.appendChild(ul);
+        parr.textContent = producto.category;
+        insertarClases(parr, "my-2")
+        li.appendChild(parr);
+        li.appendChild(document.createTextNode(producto.title));
+        li.appendChild(img);
+        li.appendChild(document.createTextNode(producto.price + " €"));
+        li.appendChild(div);
+        li.id = `${producto.id}`;
+        ul.appendChild(li);   
     });
+    insertarClases(ul, "mx-7", "flex", "flex-wrap", "gap-5", "text-center", "flex-1", "basis-80", "justify-center");
+    let articulo = document.getElementById("mostrar");
+    articulo.innerHTML = "";
+    articulo.appendChild(boton);
+    articulo.appendChild(ul);
+    escuchadorMeGusta();
+    escuchadorNoGusta();
+    mostrarInformacionExtra(); 
+    escuchadorAnadir();
 }
 
 function insertarClases(elemento, ...clases) {
@@ -463,9 +571,11 @@ function mostrarCarrito() {
 }
 
 function crearTablaCarrito(productos) {
+    const anadirSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path></svg>`;
+    const menosSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5 11V13H19V11H5Z"></path></svg>`;
     const tabla = document.createElement("table");
     let cabecera = document.createElement("tr");
-    ["Título", "Imagen", "Precio"].forEach((elemento) => {
+    ["Cantidad", "Título", "Imagen", "Precio"].forEach((elemento) => {
         let th = document.createElement("th");
         th.textContent = elemento;
         insertarClases(th, "text-center");
@@ -474,10 +584,26 @@ function crearTablaCarrito(productos) {
     tabla.appendChild(cabecera);
     productos.forEach((producto) => {
         let cuerpo = document.createElement("tr");
+        let cantidad = document.createElement("td");
+        let spanMas = document.createElement("span");
+        let spanMenos = document.createElement("span");
+        let parrafo = document.createElement("p");
         let titulo = document.createElement("td");
         let imagen = document.createElement("td");
         let img = document.createElement("img");
         let precio = document.createElement("td");
+        spanMas.innerHTML = anadirSvg;
+        spanMas.classList.add("anadirCarrito");
+        insertarClases(spanMas, "w-7", "block", "cursor-pointer", "my-5");
+        parrafo.id = `${producto.id}`;
+        parrafo.textContent = encontrarLocalCarrito(producto.id);
+        spanMenos.innerHTML = menosSvg;
+        spanMenos.classList.add("eliminarCarrito");
+        insertarClases(spanMenos, "w-7", "block", "cursor-pointer", "my-5");
+        cantidad.appendChild(spanMas);
+        cantidad.appendChild(parrafo);
+        cantidad.appendChild(spanMenos);
+        insertarClases(cantidad, "flex", "flex-col", "justify-center", "items-center", "mt-5");
         titulo.textContent = producto.title;
         insertarClases(titulo, "text-center");
         img.src = producto.image;
@@ -485,6 +611,7 @@ function crearTablaCarrito(productos) {
         imagen.appendChild(img);
         precio.textContent = producto.price + " €";
         insertarClases(precio, "text-center", "w-24");
+        cuerpo.appendChild(cantidad);
         cuerpo.appendChild(titulo);
         cuerpo.appendChild(imagen);
         cuerpo.appendChild(precio);
@@ -497,10 +624,64 @@ function crearTablaCarrito(productos) {
     insertarClases(btn, "bg-blue-800", "text-white", "p-2", "rounded-3xl", "my-5");
     let articulo = document.getElementById("carrito");
     articulo.innerHTML = "";
+    insertarClases(tabla, "my-8");
     articulo.appendChild(tabla);
     articulo.appendChild(btn);
-    articulo.classList.add("flex", "flex-col", "justify-center", "items-center")
+    articulo.classList.add("flex", "flex-col", "justify-center", "items-center");
+    escuchadorAnadirCarrito();
+    escuchadorEliminarCarrito();
 }
+
+function escuchadorAnadirCarrito() {
+    let spanAnadir = document.querySelectorAll(".anadirCarrito");
+    spanAnadir.forEach((span) => {
+        span.addEventListener("click", (evento) => {
+            let parrafoHermano = span.nextElementSibling;
+            let valor = parseInt(parrafoHermano.textContent);
+            valor++;
+            parrafoHermano.textContent = `${valor}`;
+            let carritoStorage = JSON.parse(localStorage.getItem("carrito"));
+            carritoStorage.forEach((elemento) => {
+                if (elemento.id == parrafoHermano.id) {
+                    elemento.cantidad = valor;
+                }
+            });
+            localStorage.setItem("carrito", JSON.stringify(carritoStorage));
+        });
+    });
+
+}
+
+function escuchadorEliminarCarrito () {
+    let spanEliminar = document.querySelectorAll(".eliminarCarrito");
+    spanEliminar.forEach((span) => {
+        span.addEventListener("click", (evento) => {
+            let i = 0;
+            let parrafoHermano = span.previousElementSibling;
+            let valor = parseInt(parrafoHermano.textContent);
+            valor--;
+            parrafoHermano.textContent = `${valor}`;
+            let carritoStorage = JSON.parse(localStorage.getItem("carrito"));
+            carritoStorage.forEach((elemento) => {
+                if (elemento.id == parrafoHermano.id) {
+                    if (valor <= 0) {
+                        carritoStorage.splice(i, 1);
+                        document.getElementById("carrito").innerHTML = "";
+                        setTimeout(function() {
+                            document.getElementById("activar").click();
+                        }, 500);
+                    } else {
+                        elemento.cantidad = valor;
+                    }
+                }
+                i++;
+            });
+            localStorage.setItem("carrito", JSON.stringify(carritoStorage));
+        });
+    });
+
+}
+
 
 function escuchadorAnadir() {
     let spanAnadir = document.querySelectorAll(".anadir");
@@ -523,6 +704,7 @@ function escuchadorAnadir() {
                 cargarProductos(limite).then((datos) => {
                     datos.forEach(prod => {
                         if (prod.id == abuelo.id) {
+                            prod.cantidad = 1;
                             carritoStorage.push(prod);
                         }
                         
@@ -545,10 +727,20 @@ function escuchadorAnadir() {
 function escuchadorMeGusta() {
     let spanMeGusta = document.querySelectorAll(".me-gusta");
     spanMeGusta.forEach((span) => {
+        let padre = span.parentNode;
+        let abuelo = padre.parentNode;
         let parrafo = span.querySelector("p");
         span.addEventListener("click", (evento) => {
+            let meGusta = JSON.parse(localStorage.getItem("gusta"));
             let valor = parseInt(parrafo.textContent);
-            parrafo.textContent = `${valor + 1}`;
+            valor += 1;
+            parrafo.textContent = `${valor}`;
+            meGusta.forEach((elemento) => {
+                if (elemento.id == abuelo.id) {
+                    elemento.cantidad += 1;
+                }
+            });
+            localStorage.setItem("gusta", JSON.stringify(meGusta));
         });
     });
 }
@@ -556,19 +748,29 @@ function escuchadorMeGusta() {
 function escuchadorNoGusta() {
     let spanNoMeGusta = document.querySelectorAll(".no-me-gusta");
     spanNoMeGusta.forEach((span) => {
+        let padre = span.parentNode;
+        let abuelo = padre.parentNode;
         let parrafo = span.querySelector("p");
         span.addEventListener("click", (evento) => {
+            let noGusta = JSON.parse(localStorage.getItem("noGusta"));
             let valor = parseInt(parrafo.textContent);
-            parrafo.textContent = `${valor + 1}`;
+            valor += 1;
+            parrafo.textContent = `${valor}`;
+            noGusta.forEach((elemento) => {
+                if (elemento.id == abuelo.id) {
+                    elemento.cantidad += 1;
+                }
+            });
+            localStorage.setItem("noGusta", JSON.stringify(noGusta));
         });
     });
 }
 
 function mostrarInformacionExtra() {
     let ver = document.querySelectorAll(".ver");
-    ver.forEach((spam) => {
-        spam.addEventListener("click", (evento) => {
-            let padre = spam.parentNode;
+    ver.forEach((span) => {
+        span.addEventListener("click", (evento) => {
+            let padre = span.parentNode;
             let abuelo = padre.parentNode;  
             cargarProductos(limite).then(datos => {
                 let objeto = {};
@@ -581,9 +783,11 @@ function mostrarInformacionExtra() {
                 mostrarInfo.classList.remove("hidden");
                 mostrarInfo.classList.add("flex", "flex-col", "justify-center", "items-center");
                 document.getElementById("mostrar").classList.add("hidden");
+                document.getElementById("opciones").classList.add("hidden");
                 document.getElementById("cerrar").addEventListener("click", (evento) => {
                     document.getElementById("mostrarInfo").classList.add("hidden");
                     document.getElementById("mostrar").classList.remove("hidden");
+                    document.getElementById("opciones").classList.remove("hidden");
                     
                 })
                 let titulo = document.getElementById("titulo");
