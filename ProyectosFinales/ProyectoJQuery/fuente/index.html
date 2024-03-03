@@ -6,24 +6,51 @@
         <title>Proyecto JQuery</title>
         <link rel="stylesheet" href="css/salida.css">
         <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="./js/index.js" defer></script>
     </head>
     <body class="mx-auto">
-        <header>
-            <nav>
-                <img class="w-8" src="../node_modules/remixicons/fill/shopping-cart.svg" alt="">
+        <header class="w-full bg-slate-300">
+            <nav class="h-16 w-10/12 m-auto flex justify-between items-center">
+                <img class="w-7" src="../node_modules/remixicons/fill/shopping-cart.svg">
             </nav>
         </header>
         <main>
-            <select>
-                <option value="lista">Lista</option>
-                <option value="tabla">Tabla</option>
-            </select>
-            <section>
-                <article id="lista">
-                    <!-- <img src="../node_modules/remixicons/fill/add.svg"> -->
+            <section id="mostrarContenido" class="flex flex-col justify-center items-center">
+                <article id="opciones" class="m-auto">
+                    <select id="selectPrincipal" class="w-max bg-white my-6">
+                        <option value="tabla" selected>Tabla</option>
+                        <option value="lista" >Lista</option>
+                    </select>
                 </article>
-                <article id="tabla">
+                <article id="mostrarLista" class="hidden m-auto text-center">
+                    <select id="selectSecundario" class="w-max px-2 py-1 my-7 rounded-xl bg-blue-300 text-white">
+                        <option value="" selected disabled>Ordenar por ...</option>
+                        <option value="raza">Raza</option>
+                        <option value="ciudad">Ciudad</option>
+                        <option value="origen">Origen</option>
+                        <option value="pelaje">Pelaje</option>
+                        <option value="patron">Patron</option>
+                    </select>
+                    <div id="LisUl">
 
+                    </div>
+                </article>
+                <article id="mostrarTabla">
+                    
+                </article>
+            </section>
+            <section id="mostrarInfo" class="hidden relative w-3/4 mt-5 mx-auto">
+                <img id="cerrar" class="absolute w-6 top-2 right-4 cursor-pointer" src="../node_modules/remixicons/fill/close-circle.svg" >
+                <article id="info-encontrada" class="hidden relative w-11/12 h-screen text-center">
+                        <h2 id="nombre" class="font-bold text-3xl"></h2>
+                        <p id="tiempoVida"></p>
+                        <p id="descripcion"></p>
+                        <div id="imagen" class="w-2/3 mx-auto my-4">
+    
+                        </div>
+                </article>
+                <article id="info-no-encontrada" class="text-center">
+                    <h4>No se ha encontrado información de esa raza</h4>
                 </article>
             </section>
         </main>
