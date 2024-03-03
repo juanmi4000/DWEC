@@ -1,4 +1,4 @@
-<h2><a href='https://superb-taiyaki-a4828c.netlify.app/' target='_blank'>Netlify producción</a></h2>
+<h2><a href='https://proyecto-jquery.netlify.app/' >Netlify producción</a></h2>
 
 Con esta aplicación se ha conseguido los siguientes objetivos:
 - Consultar la API https://catfact.ninja/ y construir una tabla o lista, como prefiera el usuario.
